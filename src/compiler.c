@@ -27,11 +27,11 @@ char *s;
 {
   int i;
   r_flag = 1;
-  fprintf(f_out,"\n");
+  fprintf(yyout,"\n");
   for (i = 1; i < column; i++)
-    fprintf(f_out," ");
-  fprintf(f_out,"^\n");
-  fprintf(f_out,"** Error ** %s",s);
+    fprintf(yyout," ");
+  fprintf(yyout,"^\n");
+  fprintf(yyout,"** Error ** %s",s);
 }
 
 
@@ -109,10 +109,10 @@ reset_comp()
 
   /* check for too many intructions */
   if (num_instr == CODESPACE) {
-    fprintf(f_out,"\n** Error ** instruction space exceeded\n");
+    fprintf(yyout,"\n** Error ** instruction space exceeded\n");
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**reset_comp**\n\n");
+      fprintf(yyout,"\n\n**reset_comp**\n\n");
     good = 0;
   }
 
@@ -141,33 +141,33 @@ reset_comp()
       mainfunc = 1;
 
     if (!found) {
-      fprintf(f_out,
+      fprintf(yyout,
    "\n** Error ** '%s (%d)' function referenced, but not defined or intrinsic\n",
 	(func_tab + (i * ILEN)),i);
       good =0;
       r_flag = 1;
       if (r_debug)
-        fprintf(f_out,"\n\n**reset_comp**\n\n");
+        fprintf(yyout,"\n\n**reset_comp**\n\n");
     }
   }
 
   if (!mainfunc) {
-    fprintf(f_out,"\n** Error ** 'main' not defined\n");
+    fprintf(yyout,"\n** Error ** 'main' not defined\n");
     good = 0;
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**reset_comp**\n\n");
+      fprintf(yyout,"\n\n**reset_comp**\n\n");
   }
 
   if (undeclared > 0)
-    fprintf(f_out,"\n** Warning ** %d undeclared variables\n",undeclared);
+    fprintf(yyout,"\n** Warning ** %d undeclared variables\n",undeclared);
 
   if (postfix > 0)
-    fprintf(f_out,"\n** Warning ** %d postfix operators\n",postfix);
+    fprintf(yyout,"\n** Warning ** %d postfix operators\n",postfix);
 
-  fprintf(f_out,"\nCode utilization: %d%%   (%d / %d) \n",
+  fprintf(yyout,"\nCode utilization: %d%%   (%d / %d) \n",
 	  (int) (((long) num_instr) * 100L / CODESPACE) ,num_instr,CODESPACE);
-  fflush(f_out);
+  fflush(yyout);
 
   /* clean up compiler tables and flags */
   num_parm = 0;
@@ -207,11 +207,11 @@ new_func()
   /* make sure name is not an intrinsic */
   for (i = 0; *(intrinsics[i].n) != '\0'; i++) {
     if (strcmp(intrinsics[i].n,func_ident) == 0) {
-     fprintf(f_out,"\n** Error ** '%s' function definition same as intrinsic\n",
+     fprintf(yyout,"\n** Error ** '%s' function definition same as intrinsic\n",
 	      func_ident);
       r_flag = 1;
       if (r_debug)
-        fprintf(f_out,"\n\n**new_func**\n\n");
+        fprintf(yyout,"\n\n**new_func**\n\n");
       return (0);
     }
   }
@@ -247,13 +247,13 @@ end_func()
   var_off = 0;
 
   if (r_debug) {
-    fprintf(f_out,"\n\nFunction: %s\n\n  Local symbol table:\n",new->func_name);
+    fprintf(yyout,"\n\nFunction: %s\n\n  Local symbol table:\n",new->func_name);
     dumpoff(var_tab);
-    fprintf(f_out,"\n\n\nExternal symbol table:\n");
+    fprintf(yyout,"\n\n\nExternal symbol table:\n");
     dumpoff(ext_tab);
-    fprintf(f_out,"\n\nFunction symbol table:\n");
+    fprintf(yyout,"\n\nFunction symbol table:\n");
     dumpoff(func_tab);
-    fprintf(f_out,"\n\n Generated code:\n");
+    fprintf(yyout,"\n\n Generated code:\n");
     decompile(cur_robot->code_list->first);
   }
 
@@ -283,8 +283,8 @@ char *pool;
   }
   r_flag = 1;
   if (r_debug)
-    fprintf(f_out,"\n\n**alloc_var**\n\n");
-  fprintf(f_out,"\n\n** Error ** symbol pool exceeded\n");
+    fprintf(yyout,"\n\n**alloc_var**\n\n");
+  fprintf(yyout,"\n\n** Error ** symbol pool exceeded\n");
   return (-1);
 }
 
@@ -323,7 +323,7 @@ int *ptr;
   } else {
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**stackid**\n\n");
+      fprintf(yyout,"\n\n**stackid**\n\n");
     return (-1);
   }
 }
@@ -344,7 +344,7 @@ int *ptr;
   } else {
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**popid**\n\n");
+      fprintf(yyout,"\n\n**popid**\n\n");
     return (-1);
   }
 }
@@ -368,7 +368,7 @@ char *pool;
    
   r_flag = 1;
   if (r_debug)
-    fprintf(f_out,"\n\n**poolsize**\n\n");
+    fprintf(yyout,"\n\n**poolsize**\n\n");
   return (-1);
 }
 
@@ -385,9 +385,9 @@ char *pool;
   for (i = 0; i < MAXSYM; i++) {
     if (*(pool + (i * ILEN)) == '\0')
       return;
-    fprintf(f_out,"%4d : %-8s  ",i,pool + (i * ILEN));
+    fprintf(yyout,"%4d : %-8s  ",i,pool + (i * ILEN));
     if (++count == 4) {
-      fprintf(f_out,"\n");
+      fprintf(yyout,"\n");
       count = 0;
     }
   }
@@ -405,7 +405,7 @@ int offset;
   if (++num_instr == CODESPACE) {
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**efetch**\n\n");
+      fprintf(yyout,"\n\n**efetch**\n\n");
     return (0);
   }
   instruct->ins_type = FETCH;
@@ -425,7 +425,7 @@ int operator;
   if (++num_instr == CODESPACE) {
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**estore*\n\n");
+      fprintf(yyout,"\n\n**estore*\n\n");
     return (0);
   }
   instruct->ins_type = STORE;
@@ -463,7 +463,7 @@ int c;
   if (++num_instr == CODESPACE) {
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**ebinop**\n\n");
+      fprintf(yyout,"\n\n**ebinop**\n\n");
     return (0);
   }
   instruct->ins_type = BINOP;
@@ -482,7 +482,7 @@ int c;
   if (++num_instr == CODESPACE) {
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**efcall**\n\n");
+      fprintf(yyout,"\n\n**efcall**\n\n");
     return (0);
   }
   instruct->ins_type = FCALL;
@@ -500,7 +500,7 @@ eretsub()
   if (++num_instr == CODESPACE) {
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**eretsub**\n\n");
+      fprintf(yyout,"\n\n**eretsub**\n\n");
     return (0);
   }
   instruct->ins_type = RETSUB;
@@ -517,7 +517,7 @@ ebranch()
   if (++num_instr == CODESPACE) {
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**ebranch**\n\n");
+      fprintf(yyout,"\n\n**ebranch**\n\n");
     return (0);
   }
   instruct->ins_type = BRANCH;
@@ -535,7 +535,7 @@ echop()
   if (++num_instr == CODESPACE) {
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**echop**\n\n");
+      fprintf(yyout,"\n\n**echop**\n\n");
     return (0);
   }
   instruct->ins_type = CHOP;
@@ -552,7 +552,7 @@ eframe()
   if (++num_instr == CODESPACE) {
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**eframe**\n\n");
+      fprintf(yyout,"\n\n**eframe**\n\n");
     return (0);
   }
   instruct->ins_type = FRAME;
@@ -567,10 +567,10 @@ new_if()
 
 {
   if (if_nest == NESTLEVEL) {
-    fprintf(f_out,"\n** Error ** 'if' nest level exceeded\n");
+    fprintf(yyout,"\n** Error ** 'if' nest level exceeded\n");
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**new_if**\n\n");
+      fprintf(yyout,"\n\n**new_if**\n\n");
     return (0);
   }
 
@@ -627,10 +627,10 @@ new_while()
 
 {
   if (while_nest == NESTLEVEL) {
-    fprintf(f_out,"\n** Error ** 'while' nest level exceeded\n");
+    fprintf(yyout,"\n** Error ** 'while' nest level exceeded\n");
     r_flag = 1;
     if (r_debug)
-      fprintf(f_out,"\n\n**new_while**\n\n");
+      fprintf(yyout,"\n\n**new_while**\n\n");
     return (0);
   }
   while_nest++;
@@ -704,48 +704,48 @@ decinstr(code)
 struct instr *code;
 {
 
-  fprintf(f_out,"%8ld : ",(long) code);	/* this could be flakey */
+  fprintf(yyout,"%8ld : ",(long) code);	/* this could be flakey */
   switch (code->ins_type) {
     case FETCH:
       if (code->u.var1 & EXTERNAL) 
-	fprintf(f_out,"fetch   %d external\n",code->u.var1 & ~EXTERNAL);
+	fprintf(yyout,"fetch   %d external\n",code->u.var1 & ~EXTERNAL);
       else
-	fprintf(f_out,"fetch   %d local\n",code->u.var1);
+	fprintf(yyout,"fetch   %d local\n",code->u.var1);
       break;
     case STORE:
       if (code->u.a.var2 & EXTERNAL)
-	fprintf(f_out,"store   %d external, ",
+	fprintf(yyout,"store   %d external, ",
 		code->u.a.var2 & ~EXTERNAL);
       else
-	fprintf(f_out,"store   %d local, ",code->u.a.var2);
+	fprintf(yyout,"store   %d local, ",code->u.a.var2);
       printop(code->u.a.a_op);
-      fprintf(f_out,"\n");
+      fprintf(yyout,"\n");
       break;
     case CONST:
-      fprintf(f_out,"const   %ld\n",code->u.k);
+      fprintf(yyout,"const   %ld\n",code->u.k);
       break;
     case BINOP:
-      fprintf(f_out,"binop   ");
+      fprintf(yyout,"binop   ");
       printop(code->u.var1);
-      fprintf(f_out,"\n");
+      fprintf(yyout,"\n");
       break;
     case FCALL:
-      fprintf(f_out,"fcall   %d\n",code->u.var1);
+      fprintf(yyout,"fcall   %d\n",code->u.var1);
       break;
     case RETSUB:
-      fprintf(f_out,"retsub\n");
+      fprintf(yyout,"retsub\n");
       break;
     case BRANCH:
-      fprintf(f_out,"branch  %ld\n",(long) code->u.br); /* more flakiness */
+      fprintf(yyout,"branch  %ld\n",(long) code->u.br); /* more flakiness */
       break;
     case CHOP:
-      fprintf(f_out,"chop\n");
+      fprintf(yyout,"chop\n");
       break;
     case FRAME:
-      fprintf(f_out,"frame\n");
+      fprintf(yyout,"frame\n");
       break;
     default:
-      fprintf(f_out,"ILLEGAL %d\n",code->ins_type);
+      fprintf(yyout,"ILLEGAL %d\n",code->ins_type);
       return;
   }
 }
@@ -761,135 +761,135 @@ int op;
   switch (op) {
 
     case  '=':
-      fprintf(f_out,"=");
+      fprintf(yyout,"=");
       break;
 
     case  '|':
-      fprintf(f_out,"|");
+      fprintf(yyout,"|");
       break;
 
     case  '^':
-      fprintf(f_out,"^");
+      fprintf(yyout,"^");
       break;
 
     case  '&':
-      fprintf(f_out,"&");
+      fprintf(yyout,"&");
       break;
 
     case  '<':
-      fprintf(f_out,"<");
+      fprintf(yyout,"<");
       break;
 
     case  '>':
-      fprintf(f_out,">");
+      fprintf(yyout,">");
       break;
 
     case  '+':
-      fprintf(f_out,"+");
+      fprintf(yyout,"+");
       break;
 
     case  '-':
-      fprintf(f_out,"-");
+      fprintf(yyout,"-");
       break;
 
     case  '*':
-      fprintf(f_out,"*");
+      fprintf(yyout,"*");
       break;
 
     case  '/':
-      fprintf(f_out,"/");
+      fprintf(yyout,"/");
       break;
 
     case  '%':
-      fprintf(f_out,"%");
+      fprintf(yyout,"%");
       break;
 
     case  LEFT_OP:
-      fprintf(f_out,"<<");
+      fprintf(yyout,"<<");
       break;
 
     case  RIGHT_OP:
-      fprintf(f_out,">>");
+      fprintf(yyout,">>");
       break;
 
     case  LE_OP:
-      fprintf(f_out,"<=");
+      fprintf(yyout,"<=");
       break;
 
     case  GE_OP:
-      fprintf(f_out,">=");
+      fprintf(yyout,">=");
       break;
 
     case  EQ_OP:
-      fprintf(f_out,"==");
+      fprintf(yyout,"==");
       break;
 
     case  NE_OP:
-      fprintf(f_out,"!=");
+      fprintf(yyout,"!=");
       break;
 
     case  AND_OP:
-      fprintf(f_out,"&&");
+      fprintf(yyout,"&&");
       break;
 
     case  OR_OP:
-      fprintf(f_out,"||");
+      fprintf(yyout,"||");
       break;
 
     case  MUL_ASSIGN:
-      fprintf(f_out,"*=");
+      fprintf(yyout,"*=");
       break;
 
     case  DIV_ASSIGN:
-      fprintf(f_out,"/=");
+      fprintf(yyout,"/=");
       break;
 
     case  MOD_ASSIGN:
-      fprintf(f_out,"%=");
+      fprintf(yyout,"%=");
       break;
 
     case  ADD_ASSIGN:
-      fprintf(f_out,"+=");
+      fprintf(yyout,"+=");
       break;
 
     case  SUB_ASSIGN:
-      fprintf(f_out,"-=");
+      fprintf(yyout,"-=");
       break;
 
     case  LEFT_ASSIGN:
-      fprintf(f_out,"<<=");
+      fprintf(yyout,"<<=");
       break;
 
     case  RIGHT_ASSIGN:
-      fprintf(f_out,">>=");
+      fprintf(yyout,">>=");
       break;
 
     case  AND_ASSIGN:
-      fprintf(f_out,"&=");
+      fprintf(yyout,"&=");
       break;
 
     case  XOR_ASSIGN:
-      fprintf(f_out,"^=");
+      fprintf(yyout,"^=");
       break;
 
     case  OR_ASSIGN:
-      fprintf(f_out,"|=");
+      fprintf(yyout,"|=");
       break;
 
     case  U_NEGATIVE:
-      fprintf(f_out,"(-)");
+      fprintf(yyout,"(-)");
       break;
 
     case  U_NOT:
-      fprintf(f_out,"(!)");
+      fprintf(yyout,"(!)");
       break;
 
     case  U_ONES:
-      fprintf(f_out,"(~)");
+      fprintf(yyout,"(~)");
       break;
 
     default:
-      fprintf(f_out,"ILLEGAL %d",op);
+      fprintf(yyout,"ILLEGAL %d",op);
       break;
 
   }

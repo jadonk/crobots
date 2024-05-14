@@ -18,23 +18,29 @@
 #define INIT 1 
 #include "crobots.h"
 
+#include "compiler.h"
+
 #ifdef UNIX
 #include <signal.h>
-extern int catch_int();
+#include <stdlib.h>
+#include <string.h>
+void catch_int();
 #endif
 #ifdef LATTICE
 int _stack = 6000;  /* Lattice C: give more stack than default of 2048 */
 #endif
 
-/* files declared in compiler.h */
-FILE *f_in;
-FILE *f_out;
+const char version[]   = "CROBOTS - version 1.1, December, 1985\n";
+const char copyright[] = "Copyright 1985 by Tom Poindexter, All rights reserved.\n";
 
-char *version   = "CROBOTS - version 1.1, December, 1985\n";
-char *copyright = "Copyright 1985 by Tom Poindexter, All rights reserved.\n";
+void init_robot(int i);
+void comp(char *f[],int n);
+void trace(char *f);
+void play(char *f[],int n);
+void match(int m,long l,char *f[],int n);
+void free_robot(int i);
 
-
-main(argc,argv)
+int main(argc,argv)
 int argc;
 char *argv[];
 {
@@ -51,7 +57,9 @@ char *argv[];
   long time();
   long atol();
   long cur_time;
+#ifndef UNIX
   int srand();
+#endif
 
 
   /* print version, copyright notice, GPL notice */
@@ -122,8 +130,8 @@ char *argv[];
     } else { 	/* a file name, check for existence */
 
       if (num_robots < MAXROBOTS) {
-	if ((f_in = fopen(argv[i],"r")) != (FILE *) NULL) {
-	  fclose(f_in);
+	if ((yyin = fopen(argv[i],"r")) != (FILE *) NULL) {
+	  fclose(yyin);
 	  files[num_robots] = argv[i];
 	  num_robots++;
 	} else {
@@ -190,19 +198,19 @@ char *argv[];
 
 /* comp - only compile the files with full info */
 
-comp(f,n)
+void comp(f,n)
 
 char *f[];
 int n;
 {
   int i;
 
-  f_out = stdout;
+  yyout = stdout;
   r_debug = 1;  /* turns on full compile info */
 
   for (i = 0; i < n; i++) {
-    fprintf(f_out,"Compiling robot source: %s\n\n",f[i]);
-    f_in = fopen(f[i],"r");
+    fprintf(yyout,"Compiling robot source: %s\n\n",f[i]);
+    yyin = fopen(f[i],"r");
 
     /* compile the robot */
     r_flag = 0;
@@ -210,7 +218,7 @@ int n;
     init_comp();	/* initialize the compiler */
     yyparse();		/* start compiling */
     reset_comp();	/* reset compiler and complete robot */
-    fclose(f_in);
+    fclose(yyin);
 
     /* check r_flag for compile errors */
     if (r_flag) {
@@ -228,7 +236,7 @@ int n;
 
 /* play - watch the robots compete */
 
-play(f,n)
+void play(f,n)
 
 char *f[];
 int n;
@@ -242,12 +250,12 @@ int n;
   char *s;
   char *strrchr();  /* this is rindex in some implementations */
 
-  f_out = stdout;
+  yyout = stdout;
   r_debug = 0;  /* turns off full compile info */
 
   for (i = 0; i < n; i++) {
-    fprintf(f_out,"Compiling robot source: %s\n\n",f[i]);
-    f_in = fopen(f[i],"r");
+    fprintf(yyout,"Compiling robot source: %s\n\n",f[i]);
+    yyin = fopen(f[i],"r");
 
     /* compile the robot */
     r_flag = 0;
@@ -256,7 +264,7 @@ int n;
     init_comp();	/* initialize the compiler */
     yyparse();		/* start compiling */
     reset_comp();	/* reset compiler and complete robot */
-    fclose(f_in);
+    fclose(yyin);
 
     /* check r_flag for compile errors */
     if (r_flag) {
@@ -370,7 +378,7 @@ int n;
 
 /* match - run a series of matches */
 
-match(m,l,f,n)
+void match(m,l,f,n)
 
 int m;
 long l;
@@ -389,9 +397,9 @@ int n;
   char *strrchr();  /* this is rindex in some implementations */
 
 #ifdef UNIX
-  f_out = fopen("/dev/null","w");
+  yyout = fopen("/dev/null","w");
 #else
-  f_out = fopen("nul:","w");
+  yyout = fopen("nul:","w");
 #endif
   r_debug = 0;  /* turns off full compile info */
 
@@ -399,7 +407,7 @@ int n;
     wins[i] = 0;
     ties[i] = 0;
     fprintf(stderr,"Compiling robot source: %s\n",f[i]);
-    f_in = fopen(f[i],"r");
+    yyin = fopen(f[i],"r");
 
     /* compile the robot */
     r_flag = 0;
@@ -409,7 +417,7 @@ int n;
     init_comp();
     yyparse();
     reset_comp();
-    fclose(f_in);
+    fclose(yyin);
 
     /* check r_flag for compile errors */
     if (r_flag) {
@@ -430,7 +438,7 @@ int n;
     }
   }
 
-  fclose(f_out);
+  fclose(yyout);
 
   if (num_robots < 2) {
     fprintf(stderr,"\n\nCannot play without at least 2 robots.\n\n");
@@ -544,7 +552,7 @@ int n;
 /*           dependent on MAXROBOTS <= 4 */
 /*            put robots in separate quadrant */
 
-rand_pos(n)
+void rand_pos(n)
 
 int n;
 {
@@ -578,15 +586,15 @@ int n;
 
 /* trace - compile and run the robot in debug mode */
 
-trace(f)
+void trace(f)
 
 char *f;
 {
   int c = 1; 
 
   r_debug = 1; /* turns on debugging in cpu */
-  f_in = fopen(f,"r");
-  f_out= stdout;
+  yyin = fopen(f,"r");
+  yyout= stdout;
 
   /* compile the robot */
   r_flag = 0;
@@ -614,7 +622,7 @@ char *f;
 
   cur_robot = &robots[0];
 
-  fprintf("\n\nReady to debug, use `d' to dump robot info, `q' to quit.\n\n");
+  fprintf(stdout,"\n\nReady to debug, use `d' to dump robot info, `q' to quit.\n\n");
 
   while (c) {  
     cycle();
@@ -629,11 +637,8 @@ char *f;
 }
 
 
-
-
 /* init a robot */
-init_robot(i)
-
+void init_robot(i)
 int i;
 {
   register int j;
@@ -669,7 +674,7 @@ int i;
 
 /* free_robot - frees any allocated storage in a robot */
 
-free_robot(i) 
+void free_robot(i) 
 
 int i;
 {
@@ -699,7 +704,7 @@ int i;
 #ifdef UNIX
 /* catch_int - catch the interrupt signal and die, cleaning screen */
 
-catch_int()
+void catch_int()
 {
   int i;
 /* 

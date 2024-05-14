@@ -19,14 +19,16 @@ L			[a-zA-Z_]
 #include "compiler.h"
 
 /* redefine i/o */
-#undef 	input
-#define	input()  	lexgetc()
-#undef 	unput
-#define	unput(c) 	lexungetc(c)
-#undef 	output   
-#define output(c)	lexputc(c)
+/* the i/o routines depend on yyin and yyout to be opened elsewhere */
 #undef ECHO
-#define ECHO fprintf(f_out,"%s",yytext)
+#define ECHO fprintf(yyout,"%s",yytext)
+#define YY_INPUT(buf,result,max_size) \
+{ \
+  int c; \
+  c = fgetc(yyin); \
+  result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
+}
+#define output(c) putc(c,yyout)
 
 long atol();
 int count();
@@ -147,27 +149,6 @@ count()
 	ECHO;
 }
 
-
-/* the i/o routines depend on f_in and f_out to be opened elsewhere */
-
-int lexgetc()
-{
-  int c;
-  c = fgetc(f_in);
-  return ((c == EOF) ? 0 : c);
-}
-
-lexungetc(c)
-int c;
-{
-  ungetc(c,f_in);
-}
-
-lexputc(c)
-int c;
-{
-  fputc(c,f_out);
-}
 
 /* these two dummy routines for lex's debug options */
 allprint() {}

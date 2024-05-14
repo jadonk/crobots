@@ -15,6 +15,7 @@
 
 #include "crobots.h"
 #include "math.h"
+#include <stdio.h>
 
 /* stack routines in cpu.c */
 extern long push();

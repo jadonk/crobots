@@ -16,10 +16,11 @@
 #define MAXSYM    64    /* maximum number of symbol table entries per pool */
 #define NESTLEVEL 16	/* maximum nest level for ifs, whiles, and fcalls */
 
-extern char yytext[];	/* from lexical analyzer */
+/*extern char yytext[];	/* from lexical analyzer */
+extern char *yytext;	/* from lexical analyzer */
 
-extern FILE *f_in,	/* the comiler input source file */
-            *f_out;	/* the compiler diagnostic file, assumed opened */
+extern FILE *yyin,	/* the comiler input source file */
+            *yyout;	/* the compiler diagnostic file, assumed opened */
 
 #ifndef EXT
 extern

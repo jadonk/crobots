@@ -13,6 +13,9 @@
 #include <stdio.h>
 #include "crobots.h"
 #include "compiler.h"
+#ifdef UNIX
+#include <string.h>
+#endif
 
 %}
 
@@ -451,7 +454,7 @@ init_declarator
 	: declarator
 	| declarator '=' initializer
 		{ /* printf("INITIALIZER\n"); */
-		fprintf(f_out,"\n**Warning** unsupported initializer\n");
+		fprintf(yyout,"\n**Warning** unsupported initializer\n");
 		/* get rid of constant placed on stack */
 		if (!echop())
 		  return(1);
@@ -661,7 +664,7 @@ jump_statement
 		/* breaks can be handled by building a instruct chain */
 		/* as part of the while_nest structures and patching them */
 		/* on while_close.  maybe later */
-		fprintf(f_out,"\n**Warning** unsupported break\n");
+		fprintf(yyout,"\n**Warning** unsupported break\n");
 		}
 	| RETURN ';'
 		{ /* printf("RETURN-NOEXPR\n"); */
