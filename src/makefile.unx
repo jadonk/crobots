@@ -30,7 +30,7 @@ main.o: 	crobots.h main.c
 		cc $(CFLAGS) -c main.c
 
 grammar.o: 	crobots.h compiler.h grammar.y
-		yacc -d grammar.y
+		yacc -d grammar.y -Wcounterexamples
 		#egrep -v '# line|^#$$' y.tab.c >grammar.c
 		#rm y.tab.c
 		mv y.tab.c grammar.c
@@ -76,3 +76,5 @@ lint:
 		lint -abc *.c | tee crobots.lint
 		@echo 'lint output kept in crobots.lint'
 
+clean:
+		rm -f *.o lexanal.c grammar.c tokens.h

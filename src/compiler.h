@@ -16,11 +16,39 @@
 #define MAXSYM    64    /* maximum number of symbol table entries per pool */
 #define NESTLEVEL 16	/* maximum nest level for ifs, whiles, and fcalls */
 
-/*extern char yytext[];	/* from lexical analyzer */
+int yyparse (void);
+void yyerror (char *s);
 extern char *yytext;	/* from lexical analyzer */
 
 extern FILE *yyin,	/* the comiler input source file */
             *yyout;	/* the compiler diagnostic file, assumed opened */
+
+int poolsize(char *pool);
+int new_func();
+int findvar(char s[],char *pool);
+int allocvar(char s[],char *pool);
+void end_func();
+void dumpoff(char *pool);
+int stackid(char id[],char *stack,int *ptr);
+int popid(char id[],char *stack,int *ptr);
+int efetch(int offset);
+int estore(int offset, int operator);
+int econst(long c);
+int ebinop(int c);
+int efcall(int c);
+int eretsub();
+int ebranch();
+int echop();
+int eframe();
+int new_if();
+int else_part();
+int close_if();
+int new_while();
+int while_expr();
+int close_while();
+void decompile(struct instr *code);
+void decinstr(struct instr *code);
+void printop(int op);
 
 #ifndef EXT
 extern

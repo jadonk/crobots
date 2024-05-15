@@ -19,10 +19,12 @@
 #define EXT 1
 #include "compiler.h"
 #include "tokens.h"
+#include <string.h>
+#include <stdlib.h>
 
 /* yyerror - simple error message on parser failure */
 
-yyerror(s)
+void yyerror(s)
 char *s;
 {
   int i;
@@ -35,13 +37,11 @@ char *s;
 }
 
 
-char *malloc();
-
 
 /* init_comp - initializes the compiler for one file */
 /* assumes robot structure allocated and pointed to by cur->robot */
 
-init_comp() 
+void init_comp() 
 {
   register int i;
 
@@ -98,7 +98,7 @@ init_comp()
 /* reset_comp - resets the compiler for another file */
 /* completes the robot structure */
 
-reset_comp() 
+int reset_comp() 
 {
   int i, j;
   int found = 0;
@@ -200,7 +200,7 @@ reset_comp()
 
 /* new_func - reset the compiler for a new function within the same file */
 
-new_func()
+int new_func()
 {
   register int i;
 
@@ -234,7 +234,7 @@ new_func()
 
 /* end_func - cleanup the end of a function */
 
-end_func() 
+void end_func() 
 {
   register int i;
 
@@ -268,7 +268,7 @@ end_func()
 
 /* allocvar - allocates a variable in a pool, returns offset */
 
-allocvar(s,pool) 
+int allocvar(s,pool) 
 
 char s[];
 char *pool;
@@ -292,7 +292,7 @@ char *pool;
 
 /* findvar - returns offset of variable in a pool */
 
-findvar(s,pool)
+int findvar(s,pool)
 
 char s[];
 char *pool;
@@ -310,7 +310,7 @@ char *pool;
 
 /* stackid - stacks an identifier, note pointer to stack offset */
 
-stackid(id,stack,ptr)
+int stackid(id,stack,ptr)
 
 char id[];
 char *stack;
@@ -331,7 +331,7 @@ int *ptr;
 
 /* popid - unstacks an identifier, note pointer to stack offset */
 
-popid(id,stack,ptr)
+int popid(id,stack,ptr)
 
 char id[];
 char *stack;
@@ -354,7 +354,7 @@ int *ptr;
 
 /* poolsize - returns the size of a pool */
 
-poolsize(pool)
+int poolsize(pool)
 
 char *pool;
 {
@@ -375,7 +375,7 @@ char *pool;
 
 /* dumpoff - print a table of names and offsets in a symbol pool */
 
-dumpoff(pool)
+void dumpoff(pool)
 
 char *pool;
 {
@@ -398,7 +398,7 @@ char *pool;
 
 /* efetch - emit a fetch instruction */
 
-efetch(offset)
+int efetch(offset)
 
 int offset;
 {
@@ -417,7 +417,7 @@ int offset;
 
 /* estore - emit a store instruction */
 
-estore(offset, operator)
+int estore(offset, operator)
 
 int offset;
 int operator;
@@ -438,7 +438,7 @@ int operator;
 
 /* econst - emit a constant instruction */
 
-econst(c)
+int econst(c)
 
 long c;
 {
@@ -456,7 +456,7 @@ printf("\n\n**econst*\n\n");
 
 /* ebinop - emit a binop instruction */
 
-ebinop(c)
+int ebinop(c)
 
 int c;
 {
@@ -475,7 +475,7 @@ int c;
 
 /* efcall - emit a fcall instruction */
 
-efcall (c)
+int efcall (c)
 
 int c;
 {
@@ -494,7 +494,7 @@ int c;
 
 /* eretsub - emit a retsub instruction */
 
-eretsub()
+int eretsub()
 
 {
   if (++num_instr == CODESPACE) {
@@ -511,7 +511,7 @@ eretsub()
 
 /* ebranch - emit a  branch instruction */
 
-ebranch()
+int ebranch()
 
 {
   if (++num_instr == CODESPACE) {
@@ -529,7 +529,7 @@ ebranch()
 
 /* echop - emit a chop instruction */
 
-echop()
+int echop()
 
 {
   if (++num_instr == CODESPACE) {
@@ -546,7 +546,7 @@ echop()
 
 /* eframe - emit a stack frame instruction */
 
-eframe()
+int eframe()
 
 {
   if (++num_instr == CODESPACE) {
@@ -563,7 +563,7 @@ eframe()
 
 /* new_if - start a nest for an if statement */
 
-new_if()
+int new_if()
 
 {
   if (if_nest == NESTLEVEL) {
@@ -588,7 +588,7 @@ new_if()
 
 /* else_part - the else part of an if-then-else */
 
-else_part()
+int else_part()
 
 {	
   /* setup a unconditional branch around the else part */
@@ -611,7 +611,7 @@ else_part()
 
 /* close_if - close out an if nest */
 
-close_if()
+int close_if()
 
 {
   /* fix the not-else branch saved in else_part() */
@@ -623,7 +623,7 @@ close_if()
 
 /* new_while - start a nest for a new while statement */
 
-new_while()
+int new_while()
 
 {
   if (while_nest == NESTLEVEL) {
@@ -644,7 +644,7 @@ new_while()
 
 /* while_expr - while expression loop fix */
 
-while_expr()
+int while_expr()
 
 {
   if (!ebranch())
@@ -660,7 +660,7 @@ while_expr()
 
 /* close_while - close out the while nest */
 
-close_while()
+int close_while()
 
 {
   /* emit an unconditional branch */
@@ -684,7 +684,7 @@ close_while()
 
 /* decompile - print machine code */
 
-decompile(code)
+void decompile(code)
 
 struct instr *code;
 {
@@ -699,7 +699,7 @@ struct instr *code;
 
 /* decinstr - print one instruct; watch out for pointer to long conversion! */
 
-decinstr(code)
+void decinstr(code)
 
 struct instr *code;
 {
@@ -753,7 +753,7 @@ struct instr *code;
 
 /* printop - print a binary operation code */
 
-printop(op)
+void printop(op)
 
 int op;
 {
@@ -801,7 +801,7 @@ int op;
       break;
 
     case  '%':
-      fprintf(yyout,"%");
+      fprintf(yyout,"%%");
       break;
 
     case  LEFT_OP:
@@ -845,7 +845,7 @@ int op;
       break;
 
     case  MOD_ASSIGN:
-      fprintf(yyout,"%=");
+      fprintf(yyout,"%%=");
       break;
 
     case  ADD_ASSIGN:

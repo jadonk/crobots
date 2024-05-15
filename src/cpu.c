@@ -12,8 +12,17 @@
 /* cpu.c - the routines to execute crobot instructions */
 
 #include <stdio.h>
+#include <string.h>
 #include "crobots.h"
 #include "tokens.h"
+#include "compiler.h"
+
+long push(long k);
+long pop();
+void cycle();
+void binaryop(int op);
+void robot_go(struct robot *r);
+void dumpvar(long *pool, int size);
 
 /* push - basic stack push mechanism */
 /*         depends on cur_robot, set r_flag on overflow */
@@ -54,7 +63,7 @@ long pop()
 /* any errors (stack collision, missing functions, etc) cause the 'main' */
 /* function to be restarted, with a clean stack; signal by r_flag = 1 */
 
-cycle()
+void cycle()
 {
   int j;
   int c;
@@ -287,11 +296,11 @@ cycle()
       dumpvar(cur_robot->external,cur_robot->ext_count);
       printf("\nlocal stack");
       dumpvar(cur_robot->local,cur_robot->stackptr - cur_robot->local + 1);
-      printf("\n\nx...........%7ld",cur_robot->x);
-      printf("\ty...........%7ld",cur_robot->y);
-      printf("\norg_x.......%7ld",cur_robot->org_x);
-      printf("\torg_y.......%7ld",cur_robot->org_y);
-      printf("\nrange.......%7ld",cur_robot->range);
+      printf("\n\nx...........%7d",cur_robot->x);
+      printf("\ty...........%7d",cur_robot->y);
+      printf("\norg_x.......%7d",cur_robot->org_x);
+      printf("\torg_y.......%7d",cur_robot->org_y);
+      printf("\nrange.......%7d",cur_robot->range);
       printf("\tspeed.......%7d",cur_robot->speed);
       printf("\nd_speed.....%7d",cur_robot->d_speed);
       printf("\theading.....%7d",cur_robot->heading);
@@ -301,10 +310,10 @@ cycle()
       printf("\tmiss[1]stat.%7d",missiles[cur_robot-&robots[0]][1].stat);
       printf("\nmiss[0]head.%7d",missiles[cur_robot-&robots[0]][0].head);
       printf("\tmiss[1]head.%7d",missiles[cur_robot-&robots[0]][1].head);
-      printf("\nmiss[0]x....%7ld",missiles[cur_robot-&robots[0]][0].cur_x);
-      printf("\tmiss[1]y....%7ld",missiles[cur_robot-&robots[0]][1].cur_y);
-      printf("\nmiss[0]dist.%7ld",missiles[cur_robot-&robots[0]][0].curr_dist);
-      printf("\tmiss[1]dist.%7ld",missiles[cur_robot-&robots[0]][1].curr_dist);
+      printf("\nmiss[0]x....%7d",missiles[cur_robot-&robots[0]][0].cur_x);
+      printf("\tmiss[1]y....%7d",missiles[cur_robot-&robots[0]][1].cur_y);
+      printf("\nmiss[0]dist.%7d",missiles[cur_robot-&robots[0]][0].curr_dist);
+      printf("\tmiss[1]dist.%7d",missiles[cur_robot-&robots[0]][1].curr_dist);
       printf("\n\n");
       getchar();
     } else {
@@ -325,7 +334,7 @@ cycle()
 /* binaryop - pops 2 operands, performs operation, pushes result */
 /*            divide by zero handled by returning 0 */
 
-binaryop(op)
+void binaryop(op)
 
 int op;
 {
@@ -485,7 +494,7 @@ int op;
 
 /* robot_go - start the robot pointed to by r */
 
-robot_go(r)
+void robot_go(r)
 
 struct robot *r;
 {
@@ -510,7 +519,7 @@ struct robot *r;
 
 /* dumpvar - dump a variable pool or stack for length size */
 
-dumpvar(pool,size)
+void dumpvar(pool,size)
 
 long *pool;
 int size;

@@ -31,7 +31,12 @@ L			[a-zA-Z_]
 #define output(c) putc(c,yyout)
 
 long atol();
-int count();
+void count();
+void comment();
+int yywrap();
+void allprint();
+void sprint();
+
 
 %}
 
@@ -105,12 +110,12 @@ int count();
 
 %%
 
-yywrap()
+int yywrap()
 {
 	return(1);
 }
 
-comment()
+void comment()
 {
 	char c, c1;
 
@@ -134,7 +139,7 @@ loop:
 }
 
 
-count()
+void count()
 {
 	int i;
 
@@ -151,7 +156,7 @@ count()
 
 
 /* these two dummy routines for lex's debug options */
-allprint() {}
+void allprint() {}
 
-sprint() {} 
+void sprint() {} 
 

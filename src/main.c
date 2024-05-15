@@ -39,6 +39,18 @@ void trace(char *f);
 void play(char *f[],int n);
 void match(int m,long l,char *f[],int n);
 void free_robot(int i);
+void init_comp();
+int reset_comp();
+void robot_go(struct robot *r);
+void rand_pos(int n);
+void init_disp();
+void cycle();
+void move_robots(int displ);
+void move_miss(int displ);
+void show_cycle(long l);
+void end_disp();
+void count_miss(int i,int j);
+void update_disp();
 
 int main(argc,argv)
 int argc;
