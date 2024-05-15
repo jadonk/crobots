@@ -183,7 +183,7 @@ struct {
 /* move_robots - update the postion of all robots */
 /*               parm 'displ' controls call to field display */
 
-move_robots(displ)
+void move_robots(displ)
 int displ;
 {
   register int i, n;
@@ -294,7 +294,7 @@ int displ;
 /* move_miss - updates all missile positions */
 /*             parm 'displ' control display */
 
-move_miss(displ)
+void move_miss(displ)
 int displ;
 {
   register int r, i;

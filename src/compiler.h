@@ -16,6 +16,7 @@
 #define MAXSYM    64    /* maximum number of symbol table entries per pool */
 #define NESTLEVEL 16	/* maximum nest level for ifs, whiles, and fcalls */
 
+int yylex (void);
 int yyparse (void);
 void yyerror (char *s);
 extern char *yytext;	/* from lexical analyzer */

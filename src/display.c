@@ -13,10 +13,9 @@
 
 #include "crobots.h"
 
-
 /* update_disp - update all robots and missiles */
 
-update_disp()
+void update_disp()
 {
   register int i, j;
 
@@ -48,7 +47,7 @@ update_disp()
 
 /* count_miss - update the explosion counter */
 
-count_miss(i,j) 
+void count_miss(i,j) 
 
 int i, j;
 {
