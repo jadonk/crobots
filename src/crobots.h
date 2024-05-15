@@ -158,19 +158,19 @@ int r_debug,			/* debug switch */
   
 /* declare the intrinsic functions, all must push a long value on the stack */
 /* these functions don't return a long, but declared long for notation */
-void c_scan();    /* scan(degree,res);  >0 = robot distance, 0 = nothing */
-void c_cannon();  /* cannon(degree,dist); fire cannon */
-void c_drive();   /* drive(degree,speed); speed 0-100 in % */
-void c_damage();  /* damage(); = current damage in % */
-void c_speed();   /* speed(); = current speed */ 
-void c_loc_x();   /* loc_x(); = current x location */
-void c_loc_y();   /* loc_y(); = current y location */
-void c_rand();    /* rand(limit); = 0 -- limit (2**15)-1 */
-void c_sin();     /* sin(degree); = sin * 100000 */
-void c_cos();     /* cos(degree); = cos * 100000 */
-void c_tan();     /* tan(degree); = tan * 100000 */
-void c_atan();    /* atan(ratio); = degree */
-void c_sqrt();    /* sqrt(x); = square root */
+long c_scan();    /* scan(degree,res);  >0 = robot distance, 0 = nothing */
+long c_cannon();  /* cannon(degree,dist); fire cannon */
+long c_drive();   /* drive(degree,speed); speed 0-100 in % */
+long c_damage();  /* damage(); = current damage in % */
+long c_speed();   /* speed(); = current speed */ 
+long c_loc_x();   /* loc_x(); = current x location */
+long c_loc_y();   /* loc_y(); = current y location */
+long c_rand();    /* rand(limit); = 0 -- limit (2**15)-1 */
+long c_sin();     /* sin(degree); = sin * 100000 */
+long c_cos();     /* cos(degree); = cos * 100000 */
+long c_tan();     /* tan(degree); = tan * 100000 */
+long c_atan();    /* atan(ratio); = degree */
+long c_sqrt();    /* sqrt(x); = square root */
 
 /* declare instrinsic function table */
 #ifndef INIT
@@ -178,12 +178,12 @@ extern
 #endif
 struct intrin {
   char *n;
-  void (*f)();
+  long (*f)();
 } intrinsics[20]
 
 #ifdef INIT
  = {
-  {"*dummy*",	(void (*)()) 0},
+  {"*dummy*",	(long (*)()) 0},
   {"scan",	c_scan},
   {"cannon",	c_cannon},
   {"drive",	c_drive},
@@ -197,7 +197,7 @@ struct intrin {
   {"tan",	c_tan},
   {"atan",	c_atan},
   {"sqrt",	c_sqrt},
-  {"",		(void (*)()) 0} 
+  {"",		(long (*)()) 0} 
  }
 #endif
 ;

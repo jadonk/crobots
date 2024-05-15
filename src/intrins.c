@@ -35,7 +35,7 @@ extern long pop();
 /* c_scan - radar scanning function - note degrees instead of radians */
 /*          expects two agruments on stack, degree and resoultion */
 
-void c_scan() 
+long c_scan() 
 {
   register int i;
   long degree;
@@ -112,14 +112,14 @@ void c_scan()
     }
   }
 
-  push((long) close_dist);
+  return(push((long) close_dist));
 
 }
 
 /* c_cannon - fire a shot */
 /*            expects two agruments on stack, degree distance */
 
-void c_cannon() 
+long c_cannon() 
 {
   long degree;
   long distance;
@@ -133,8 +133,7 @@ void c_cannon()
     distance = MIS_RANGE;
   else
     if (distance < 0L) {
-      push(1L);
-      return;
+      return(push(1L));
     }
   degree = pop();
   if (degree < 0L)
@@ -151,8 +150,7 @@ void c_cannon()
     /* cannot fire until reload cycle complete */
     if (r_debug)
       printf("reloading: %d\n",cur_robot->reload);
-    push(0L);
-    return;
+    return(push(0L));
   }
 
   /* fire cannon, if one of two missiles are available */
@@ -171,12 +169,11 @@ void c_cannon()
       missiles[r][i].rang = (int) (distance * CLICK);
       missiles[r][i].curr_dist = 0;
       missiles[r][i].count = EXP_COUNT;
-      push(1L);  
-      return;
+      return(push(1L));
     }
   }
 
-  push(0L);  
+  return(push(0L));
 
 }
 
@@ -184,7 +181,7 @@ void c_cannon()
 /* c_drive - start the propulsion system */
 /*           expect two agruments, degrees & speed */
 
-void c_drive() 
+long c_drive() 
 {
   long degree;
   long speed; 
@@ -208,47 +205,47 @@ void c_drive()
   cur_robot->d_heading = (int) degree;
   cur_robot->d_speed = (int) speed;
   
-  push(1L);
+  return(push(1L));
 }
 
 
 /* c_damage - report on damage sustained */
 
-void c_damage()
+long c_damage()
 {
-  push((long) cur_robot->damage);
+  return(push((long) cur_robot->damage));
 }
 
 
 /* c_speed - report current speed */
 
-void c_speed()
+long c_speed()
 {
-  push((long) cur_robot->speed);
+  return(push((long) cur_robot->speed));
 }
 
 
 /* c_loc_x - report current x location */
 
-void c_loc_x()
+long c_loc_x()
 {
-  push((long) cur_robot->x / CLICK);
+  return(push((long) cur_robot->x / CLICK));
 }
 
 
 /* c_loc_y - report current y location */
 
-void c_loc_y()
+long c_loc_y()
 {
   int y;
-  push((long) cur_robot->y / CLICK);
+  return(push((long) cur_robot->y / CLICK));
 }
 
 
 /* c_rand - return a random number between 0 and limit */
 /*          expect one argument, limit */
 
-void c_rand()
+long c_rand()
 {
   int rand();
   int srand(); 	/* should be seeded elsewhere */
@@ -257,16 +254,16 @@ void c_rand()
   limit = pop();
     
   if (limit <= 0L)
-    push(0L);
+    return(push(0L));
   else
-    push((long) ((long)(rand()) % limit));
+    return(push((long) ((long)(rand()) % limit)));
 }
 
 
 /* c_sin - return sin(degrees) * SCALE */
 /*         expect one agrument, degrees */
 
-void c_sin()
+long c_sin()
 {
   long degree;
   long lsin();
@@ -274,14 +271,14 @@ void c_sin()
   degree = pop() % 360L;
   degree = (long) lsin(degree);
 
-  push(degree);
+  return(push(degree));
 }
 
 
 /* c_cos - return cos(degrees) * SCALE */
 /*         expect one agrument, degrees */
 
-void c_cos()
+long c_cos()
 {
   long degree;
   long lcos();
@@ -289,28 +286,28 @@ void c_cos()
   degree = pop() % 360L;
   degree = (long) lcos(degree);
 
-  push(degree);
+  return(push(degree));
 }
 
 
 /* c_tan - return tan(degrees) * SCALE */
 /*         expect one agrument, degrees */
 
-void c_tan()
+long c_tan()
 {
   long degree;
 
   degree = pop() % 360L;
   degree = (long) (tan((double) degree / RAD_DEG) * SCALE);
 
-  push(degree);
+  return(push(degree));
 }
 
 
 /* c_atan - return atan(x) */
 /*          expect one agrument, ratio * SCALE */
 
-void c_atan()
+long c_atan()
 {
   long degree;
   long ratio;
@@ -318,14 +315,14 @@ void c_atan()
   ratio = pop();
   degree = (long) (atan((double) ratio / SCALE) * RAD_DEG);
 
-  push(degree);
+  return(push(degree));
 }
 
 
 /* c_sqrt - return sqrt(x) */
 /*          expect one agrument, x */
 
-void c_sqrt()
+long c_sqrt()
 {
   long x;
 
@@ -337,7 +334,7 @@ void c_sqrt()
 
   x = (long) (sqrt((double) x));
 
-  push(x);
+  return(push(x));
 }
 
 
