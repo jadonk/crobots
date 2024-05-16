@@ -20,7 +20,7 @@
 
 union REGS {
   struct {
-    short ax,bx,cx,dx,si,di;
+    uint16_t ax,bx,cx,dx,si,di;
   } x;
   struct {
     char al,ah,bl,bh,cl,ch,dl,dh;

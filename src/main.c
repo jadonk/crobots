@@ -366,6 +366,8 @@ int n;
       break;
   }
 
+  end_disp();
+
   k = 0;
   for (i = 0; i < MAXROBOTS; i++) {
     if (robots[i].status == ACTIVE) {
@@ -380,7 +382,6 @@ int n;
     fprintf(stdout,"\r\nIt's a draw\r\n");
   }
 
-  end_disp();
   exit(0);
 
 }
@@ -759,7 +760,7 @@ long time(x)
 long *x;
 {
   struct {
-    short ax,bx,cx,dx,si,di;
+    uint16_t ax,bx,cx,dx,si,di;
   } regs;
   int intno = 0x21;	/* dos call */
   long value;

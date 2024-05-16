@@ -87,8 +87,16 @@ void cycle()
 
     case FETCH:		/* push a value from a variable pool */
 
-      if (cur_instr->u.var1 & EXTERNAL) 
-	push(*(cur_robot->external + (cur_instr->u.var1 & ~EXTERNAL)));
+      if (cur_instr->u.var1 & EXTERNAL)
+      {
+	//push(*(cur_robot->external + (cur_instr->u.var1 & ~EXTERNAL)));
+	int16_t a = ~EXTERNAL;
+	int16_t b = cur_instr->u.var1;
+	int16_t c = a & b;
+	long int *d = cur_robot->external;
+	long int *e = d + c;
+	push(*e);
+      }
       else
 	push(*(cur_robot->local + cur_instr->u.var1));
       cur_robot->ip++;
@@ -99,7 +107,15 @@ void cycle()
 
       binaryop(cur_instr->u.a.a_op);	/* perform assignment operation */
       if (cur_instr->u.a.var2 & EXTERNAL) 
-	*(cur_robot->external +(cur_instr->u.a.var2 & ~EXTERNAL)) = push(pop());
+      {
+	//*(cur_robot->external +(cur_instr->u.a.var2 & ~EXTERNAL)) = push(pop());
+	int16_t a = ~EXTERNAL;
+	int16_t b = cur_instr->u.var1;
+	int16_t c = a & b;
+	long int *d = cur_robot->external;
+	long int *e = d + c;
+	*e = push(pop());
+      }
       else
 	*(cur_robot->local + cur_instr->u.var1) = push(pop());
       cur_robot->ip++;

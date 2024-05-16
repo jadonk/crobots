@@ -392,7 +392,7 @@ typedef __INT_LEAST16_TYPE__ yytype_int16;
 #elif defined YY_STDINT_H
 typedef int_least16_t yytype_int16;
 #else
-typedef short yytype_int16;
+typedef int16_t yytype_int16;
 #endif
 
 /* Work around bug in HP-UX 11.23, which defines these macros

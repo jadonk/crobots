@@ -10,6 +10,7 @@
 /*****************************************************************************/
 
 /* common defines */
+#include <stdint.h>
 
 /* note-the INIT flag (or lack of it) causes extern for all but one module */
 
@@ -74,11 +75,11 @@ struct instr {			/* robot machine instruction */
   char ins_type;		/* instruction type */
   union {
     long k;			/* constant value */
-    short int var1;		/* variable offset, function offset, operator */
+    int16_t var1;		/* variable offset, function offset, operator */
     struct instr *br;		/* false branch */
     struct {
-      short int var2;		/* assignment variable offset */
-      short int a_op;		/* assignment operator */
+      int16_t var2;		/* assignment variable offset */
+      int16_t a_op;		/* assignment operator */
     } a;
   } u;
 };
