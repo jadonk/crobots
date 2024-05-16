@@ -13,6 +13,10 @@
 
 
 #include <stdio.h>
+#include <unistd.h>
+#include <time.h>
+
+const struct timespec sleeptime = { 0, 100000000L };
 
 /* INIT causes externals in crobots.h to have storage, & init intrinsic table */
 #define INIT 1 
@@ -344,6 +348,7 @@ int n;
       c += UPDATE_CYCLES;
       show_cycle(c);
       update_disp();
+      nanosleep(&sleeptime, NULL);
     }
   }
 
@@ -361,11 +366,17 @@ int n;
       move_robots(1);
       move_miss(1);
       update_disp();
+      nanosleep(&sleeptime, NULL);
     } 
     else  
       break;
   }
 
+  nanosleep(&sleeptime, NULL);
+  nanosleep(&sleeptime, NULL);
+  nanosleep(&sleeptime, NULL);
+  nanosleep(&sleeptime, NULL);
+  nanosleep(&sleeptime, NULL);
   end_disp();
 
   k = 0;
